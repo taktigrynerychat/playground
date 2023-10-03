@@ -12,6 +12,9 @@ const patterns: Patterns = {
   },
   abstractFabric: {
     dynamicImport: () => import('./creational/abstract-fabric')
+  },
+  singleton: {
+    dynamicImport: () => import('./creational/singleton')
   }
 }
 
