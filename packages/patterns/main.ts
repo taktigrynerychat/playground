@@ -15,6 +15,9 @@ const patterns: Patterns = {
   },
   singleton: {
     dynamicImport: () => import('./creational/singleton')
+  },
+  builder: {
+    dynamicImport: () => import('./creational/builder')
   }
 }
 
