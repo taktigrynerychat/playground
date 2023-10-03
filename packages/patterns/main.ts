@@ -1,7 +1,17 @@
-const patterns = {
+type Patterns = {
+  [pattern: string]: {
+    dynamicImport: () => Promise<{ default: () => void }>
+    executeByDefault?: boolean
+  }
+}
+
+const patterns: Patterns = {
   fabric: {
-    dynamicImport: import('./creational/fabric'),
+    dynamicImport: () => import('./creational/fabric'),
     executeByDefault: true
+  },
+  abstractFabric: {
+    dynamicImport: () => import('./creational/abstract-fabric')
   }
 }
 
@@ -12,15 +22,13 @@ class AppElement extends HTMLElement {
     Object.entries(patterns).forEach(([key, {dynamicImport, executeByDefault}]) => {
       const el = document.createElement('button')
       const callback = async () => {
-        const { default: main } = await dynamicImport
+        const { default: main } = await dynamicImport()
         main()
       }
 
       el.innerHTML = key
       el.onclick = callback
-      if (executeByDefault) {
-        callback()
-      }
+      executeByDefault && callback()
       this.appendChild(el)
     })
   }

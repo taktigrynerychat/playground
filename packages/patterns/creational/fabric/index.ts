@@ -24,8 +24,8 @@ class ToyotaCar extends Car {
   }
 }
 
-class NisanCar extends Car {
-  public brand = 'Nisan'
+class NissanCar extends Car {
+  public brand = 'Nissan'
   public cost = 3400
 
   public get assemblingDate(): string {
@@ -65,7 +65,7 @@ function carFactory<T extends Car>(brand: new() => T): T {
 
 
 export default (): void => {
-  const nisanCar = carFactory(NisanCar)
+  const nisanCar = carFactory(NissanCar)
   const toyotaCar = carFactory(ToyotaCar)
 
   console.log(nisanCar, toyotaCar)

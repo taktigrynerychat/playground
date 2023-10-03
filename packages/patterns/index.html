@@ -8,6 +8,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
   </head>
+  <style>
+    app-root {
+      font-size: 16px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      flex: 1 0 auto;
+    }
+
+    button {
+      background: #FBCA1F;
+      font-family: Roboto,sans-serif;
+      padding: 0.6em 1.3em;
+      font-weight: 600;
+      border: 3px solid black;
+      border-radius: 0.4em;
+      box-shadow: 0.1em 0.1em;
+      font-size: 1em;
+    }
+
+    button:hover {
+      transform: translate(-0.05em, -0.05em);
+      box-shadow: 0.15em 0.15em;
+    }
+
+    button:active {
+      transform: translate(0.05em, 0.05em);
+      box-shadow: 0.05em 0.05em;
+    }
+  </style>
   <body>
     <app-root />
   </body>
