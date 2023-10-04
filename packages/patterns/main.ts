@@ -1,28 +1,4 @@
-type Patterns = {
-  [pattern: string]: {
-    dynamicImport: () => Promise<{ default: () => void }>
-    executeByDefault?: boolean
-  }
-}
-
-const patterns: Patterns = {
-  fabric: {
-    dynamicImport: () => import('./creational/fabric'),
-    executeByDefault: true,
-  },
-  abstractFabric: {
-    dynamicImport: () => import('./creational/abstract-fabric'),
-  },
-  singleton: {
-    dynamicImport: () => import('./creational/singleton'),
-  },
-  builder: {
-    dynamicImport: () => import('./creational/builder'),
-  },
-  prototype: {
-    dynamicImport: () => import('./creational/prototype'),
-  },
-}
+import {patterns} from './config';
 
 class AppElement extends HTMLElement {
   connectedCallback() {

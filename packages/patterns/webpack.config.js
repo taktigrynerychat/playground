@@ -1,8 +1,22 @@
 const { composePlugins, withNx } = require('@nx/webpack');
+const createConfigCallback = require("./create-config");
 
-// Nx plugins for webpack.
-module.exports = composePlugins(withNx(), (config) => {
-  // Update the webpack config as needed here.
-  // e.g. `config.plugins.push(new MyPlugin())`
-  return config;
-});
+class BeforeRunWebpackPlugin {
+    constructor(cb) {
+        this.cb = cb;
+    }
+
+    apply(compiler) {
+        this.cb && compiler.hooks.compile.tap("beforeRunWebpackPlugin", this.cb);
+    }
+}
+
+module.exports = composePlugins(
+    withNx(),
+    (config) => {
+        config.plugins.push(
+            new BeforeRunWebpackPlugin(createConfigCallback)
+        )
+        return config;
+    }
+);
