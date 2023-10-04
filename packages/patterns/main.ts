@@ -8,22 +8,23 @@ type Patterns = {
 const patterns: Patterns = {
   fabric: {
     dynamicImport: () => import('./creational/fabric'),
-    executeByDefault: true
+    executeByDefault: true,
   },
   abstractFabric: {
-    dynamicImport: () => import('./creational/abstract-fabric')
+    dynamicImport: () => import('./creational/abstract-fabric'),
   },
   singleton: {
-    dynamicImport: () => import('./creational/singleton')
+    dynamicImport: () => import('./creational/singleton'),
   },
   builder: {
-    dynamicImport: () => import('./creational/builder')
-  }
+    dynamicImport: () => import('./creational/builder'),
+  },
+  prototype: {
+    dynamicImport: () => import('./creational/prototype'),
+  },
 }
 
 class AppElement extends HTMLElement {
-  public static observedAttributes = [];
-
   connectedCallback() {
     Object.entries(patterns).forEach(([key, {dynamicImport, executeByDefault}]) => {
       const el = document.createElement('button')
