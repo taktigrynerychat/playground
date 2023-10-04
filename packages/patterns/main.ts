@@ -1,18 +1,24 @@
-import {patterns} from './config';
+import {PATTERNS_METADATA} from './config';
 
 class AppElement extends HTMLElement {
   connectedCallback() {
-    Object.entries(patterns).forEach(([key, {dynamicImport, executeByDefault}]) => {
-      const el = document.createElement('button')
-      const callback = async () => {
-        const { default: main } = await dynamicImport()
-        main()
-      }
+    Object.entries(PATTERNS_METADATA).forEach(([group, patternsByGroup]) => {
+      const section = document.createElement('section')
+      section.innerHTML = `<h1>${group}</h1>`
 
-      el.innerHTML = key
-      el.onclick = callback
-      executeByDefault && callback()
-      this.appendChild(el)
+      Object.entries(patternsByGroup).forEach(([patternName, {dynamicImport, executeByDefault}]) => {
+        const el = document.createElement('button')
+        const callback = async () => {
+          const { default: main } = await dynamicImport()
+          main()
+        }
+
+        el.innerHTML = patternName
+        el.onclick = callback
+        executeByDefault && callback()
+        section.appendChild(el)
+      })
+      this.appendChild(section)
     })
   }
 }

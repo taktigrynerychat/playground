@@ -1,6 +1,8 @@
-declare type Patterns = {
-  [pattern: string]: {
-    dynamicImport: () => Promise<{ default: () => void }>
-    executeByDefault?: boolean
+declare type PatternsMetadata = {
+  [group: string]: {
+    [pattern: string]: {
+      dynamicImport: () => Promise<{ default: () => void }>
+      executeByDefault?: boolean
+    }
   }
 }

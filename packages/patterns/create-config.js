@@ -19,22 +19,24 @@ module.exports = async () => {
             name: subDir,
             path: `${dir}/${subDir}`
         }))
-        return Promise.resolve([...(await acc), ...res])
-    }, Promise.resolve([]))
+        return Promise.resolve({...(await acc), [dir]: res})
+    }, Promise.resolve({}))
 
-
-    const config = `// Auto-generated file
-export const patterns: Patterns = {${directoriesMetadata.reduce((acc, {name, path}) => `${acc}
-  '${name}': {
-    dynamicImport: () => import('./${path}')
-  },`, '')}
-}`;
+    const configData = `// Auto-generated file
+export const PATTERNS_METADATA: PatternsMetadata = {${Object.entries(directoriesMetadata).reduce((acc, [group, patterns]) => {
+    return `${acc}
+  '${group}': {${patterns.reduce((pAcc, {name, path}) => `${pAcc}
+    '${name}': {
+      dynamicImport: () => import('./${path}'),
+    },`, '')}
+  },`}, '')}
+}`
     const configPath = join(__dirname, 'config.ts');
-    let previousConfig
+    let previousConfigData
 
     try {
-        previousConfig = readFileSync(configPath, { encoding: 'utf8' })
+        previousConfigData = readFileSync(configPath, { encoding: 'utf8' })
     } catch (e) {}
 
-    previousConfig !== config && await writeFile(configPath, config)
+    previousConfigData !== configData && await writeFile(configPath, configData)
 }
