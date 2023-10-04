@@ -28,6 +28,7 @@ abstract class Adapter {
     }
   }
 }
+
 export default () => {
   const userDto: UserDto = Api.getUser();
   const user: User = Adapter.getUser();
