@@ -1,14 +1,11 @@
 class Component {
-  method(): string {
+  public method(): string {
     return 'I am a component';
   }
 }
 
 class Decorator implements Component {
-  private component: Component;
-  constructor(component: Component) {
-    this.component = component;
-  }
+  constructor(protected component: Component) {}
   public method(): string {
     return `Decorated: ${this.component.method()}`;
   }
