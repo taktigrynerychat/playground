@@ -1,7 +1,7 @@
 class User {
-  name: string;
-  age: number;
-  gender: 'male' | 'female';
+  public name: string;
+  public age: number;
+  public gender: 'male' | 'female';
 }
 
 class UserBuilder {

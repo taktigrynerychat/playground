@@ -32,7 +32,7 @@ export const PATTERNS_METADATA: PatternsMetadata = {${Object.entries(directories
       content: '${content.replace(/['"`$\\]/g, "\\$&").replace(/\r/g, '\\r').replace(/\n/g, '\\n')}',
     },`, '')}
   },`}, '')}
-}`
+};`
     const configPath = join(__dirname, 'config.ts');
     let previousConfigData
 
@@ -41,14 +41,4 @@ export const PATTERNS_METADATA: PatternsMetadata = {${Object.entries(directories
     } catch (e) {}
 
     previousConfigData !== configData && await writeFile(configPath, configData)
-}
-
-function unbackslash(s) {
-    return s.replace(/\\([\\rnt'"])/g, function(match, p1) {
-        if (p1 === 'n') return '\n';
-        if (p1 === 'r') return '\r';
-        if (p1 === 't') return '\t';
-        if (p1 === '\\') return '\\';
-        return p1;       // unrecognised escape
-    });
 }

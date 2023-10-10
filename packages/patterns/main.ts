@@ -1,6 +1,6 @@
 import {PATTERNS_METADATA} from './config';
 import hljs from 'highlight.js/lib/core';
-import 'highlight.js/styles/dark.css'
+import 'highlight.js/styles/base16/darcula.css'
 import typescript from 'highlight.js/lib/languages/typescript';
 hljs.registerLanguage('typescript', typescript);
 
