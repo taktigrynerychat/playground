@@ -17,7 +17,8 @@ module.exports = async () => {
         const subDirs = await readdir(dirPath)
         const res = subDirs.map(subDir => ({
             name: subDir,
-            path: `${dir}/${subDir}`
+            path: `${dir}/${subDir}`,
+            content: readFileSync(join(dirPath, subDir, 'index.ts'), {encoding: "utf-8"})
         }))
         return Promise.resolve({...(await acc), [dir]: res})
     }, Promise.resolve({}))
@@ -25,9 +26,10 @@ module.exports = async () => {
     const configData = `// Auto-generated file
 export const PATTERNS_METADATA: PatternsMetadata = {${Object.entries(directoriesMetadata).reduce((acc, [group, patterns]) => {
     return `${acc}
-  '${group}': {${patterns.reduce((pAcc, {name, path}) => `${pAcc}
+  '${group}': {${patterns.reduce((pAcc, {name, path, content}) => `${pAcc}
     '${name}': {
       dynamicImport: () => import('./${path}'),
+      content: '${content.replace(/['"`$\\]/g, "\\$&").replace(/\r/g, '\\r').replace(/\n/g, '\\n')}',
     },`, '')}
   },`}, '')}
 }`
@@ -39,4 +41,14 @@ export const PATTERNS_METADATA: PatternsMetadata = {${Object.entries(directories
     } catch (e) {}
 
     previousConfigData !== configData && await writeFile(configPath, configData)
+}
+
+function unbackslash(s) {
+    return s.replace(/\\([\\rnt'"])/g, function(match, p1) {
+        if (p1 === 'n') return '\n';
+        if (p1 === 'r') return '\r';
+        if (p1 === 't') return '\t';
+        if (p1 === '\\') return '\\';
+        return p1;       // unrecognised escape
+    });
 }
