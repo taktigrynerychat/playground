@@ -14,6 +14,7 @@
 
 interface Command {
   invoke(): void;
+  cancel?(): void;
 }
 
 class SimpleCommand implements Command {
@@ -32,27 +33,65 @@ class ComplexCommand implements Command {
   constructor(private readonly _receiver: Receiver, private readonly _metadata: Metadata) {}
   public invoke(): void {
     console.log(`[${this.constructor.name}]: Passing command to ${Receiver.name}`);
-    const { type, timeStamp} = this._metadata;
-    this._receiver.processTime(timeStamp);
-    this._receiver.processType(type);
+    this._receiver.processMetadata(this._metadata);
+  }
+
+  public cancel(): void {
+    console.log(`[${this.constructor.name}]: Cancelling command using ${Receiver.name} (${this._metadata.type})`);
+
+    const currentState = this._receiver.state;
+    const index = currentState.findIndex(m => m === this._metadata);
+    this._receiver.state =  index >= 0 ? [
+      ...currentState.slice(0, index),
+      ...currentState.slice(index + 1)
+    ] : currentState;
+  }
+}
+
+class ShowHistoryCommand implements Command {
+  constructor(private readonly _receiver: Receiver) {}
+  public invoke(): void {
+    console.log(`[${this.constructor.name}]: Passing command to ${Receiver.name}`);
+    console.log(this._receiver.state.map(({type}) => type));
   }
 }
 
 class Receiver {
-  public processType(type: Metadata['type']): void {
-    console.log(`[Receiver]: Processing type: ${type}`);
+  private _state: Metadata[] = [];
+  public processMetadata(metadata: Metadata): void {
+    const { type, timeStamp } = metadata;
+    console.log(`[${this.constructor.name}]: Processing type: ${type}`);
+    console.log(`[${this.constructor.name}]: Processing time: ${timeStamp.getDay() + 1}/${timeStamp.getMonth() + 1}/${timeStamp.getFullYear()}`);
+    this._state.push(metadata);
   }
 
-  public processTime(time: Metadata['timeStamp']): void {
-    console.log(`[Receiver]: Processing time: ${time.getDay() + 1}/${time.getMonth() + 1}/${time.getFullYear()}`);
+  public set state(state: Metadata[]) {
+    console.log(`[${this.constructor.name}]: Setting state`);
+    this._state = state;
+  }
+
+  public get state(): Metadata[] {
+    console.log(`[${this.constructor.name}]: Getting state`);
+    return this._state;
   }
 }
 
 class Invoker {
-  public invokeActions(...actions: Command[]): void {
-    actions.forEach(action => {
-      console.log(`[Invoker]: Invoking ${action.constructor.name}`);
-      action.invoke();
+  public invokeCommands(...commands: Command[]): void {
+    commands.forEach(command => {
+      console.log(`[Invoker]: Invoking ${command.constructor.name}`);
+      command.invoke();
+    });
+  }
+
+  public cancelCommands(...commands: Command[]): void {
+    commands.forEach(command => {
+      if (command.cancel) {
+        console.log(`[Invoker]: Cancelling ${command.constructor.name}`);
+        command.cancel();
+      } else {
+        console.warn(`[Invoker]: Unable to cancel ${command.constructor.name}`);
+      }
     });
   }
 }
@@ -61,8 +100,17 @@ export default () => {
   const invoker = new Invoker();
   const receiver = new Receiver();
 
-  const action1 = new SimpleCommand('simple');
-  const action2 = new ComplexCommand(receiver, { type: 'first', timeStamp: new Date() });
+  const simpleCommand = new SimpleCommand('simple');
+  const complexCommand1 = new ComplexCommand(receiver, { type: 'first', timeStamp: new Date() });
+  const complexCommand2 = new ComplexCommand(receiver, { type: 'second', timeStamp: new Date() });
+  const complexCommand3 = new ComplexCommand(receiver, { type: 'third', timeStamp: new Date() });
+  const showHistoryCommand = new ShowHistoryCommand(receiver);
 
-  invoker.invokeActions(action1, action2);
+  invoker.invokeCommands(simpleCommand, complexCommand1, complexCommand2, complexCommand3);
+  console.log('==============STATE================');
+  invoker.invokeCommands(showHistoryCommand);
+  console.log('==============CANCEL===============');
+  invoker.cancelCommands(complexCommand2);
+  console.log('==============STATE================');
+  invoker.invokeCommands(showHistoryCommand);
 }
