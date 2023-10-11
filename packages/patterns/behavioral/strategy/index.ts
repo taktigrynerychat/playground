@@ -12,17 +12,16 @@
  * [-] Клиент должен знать, в чём состоит разница между стратегиями, чтобы выбрать подходящую.
  */
 
-class Context<Data, Str extends Strategy = undefined> {
-  private _strategy: Str;
-  constructor(private readonly _data: Data) {}
+class Context<Data, Str extends Strategy = Strategy> {
+  constructor(private readonly _data: Data, private _strategy?: Str) {}
 
-  public setStrategy<S extends (Strategy<unknown> | null), R = S extends null ? Context<Data, Strategy<Data, Data>> : Context<Data, S>>(strategy: S): R {
-    this._strategy = strategy as unknown as Str;
+  public setStrategy(strategy: Str): this {
+    this._strategy = strategy;
 
-    return this as unknown as R;
+    return this;
   }
 
-  public doOperation(): Str extends undefined ? Data : ReturnType<Str['operation']> {
+  public doOperation(): ReturnType<Str['operation']> {
     return this._strategy ? this._strategy.operation(this._data) : this._data;
   }
 }
@@ -43,18 +42,15 @@ class ToStringUpperStringStrategy<T = unknown> implements Strategy<T[], string[]
   }
 }
 
-
 export default () => {
   const contexts = [
-    new Context<string[]>(['a', 'b', 'c', 'd']),
-    new Context<number[]>([1, 2, 3, 4, 5, 6, 7]),
-    new Context<boolean[]>([true, true, false])
+    new Context(['a', 'b', 'c', 'd']),
+    new Context([1, 2, 3, 4, 5, 6, 7]),
+    new Context([true, true, false])
   ] as const;
 
   const reverseStrategy = new ReverseStrategy();
   const toStringUpperStringStrategy = new ToStringUpperStringStrategy();
-
-  console.log(new Context([1, 1, 2, 2, 3, 3]).doOperation()); // without strategy
 
   contexts.forEach(ctx => console.log(ctx.setStrategy(reverseStrategy).doOperation()));
   contexts.forEach(ctx => console.log(ctx.setStrategy(toStringUpperStringStrategy).doOperation()));
