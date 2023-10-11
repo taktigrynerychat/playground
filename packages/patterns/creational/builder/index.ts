@@ -1,3 +1,15 @@
+/**
+ * Строитель — это порождающий паттерн проектирования, который позволяет создавать сложные объекты пошагово.
+ * Строитель даёт возможность использовать один и тот же код строительства для получения разных представлений объектов.
+ *
+ * [+] Позволяет создавать продукты пошагово.
+ * [+] Позволяет использовать один и тот же код для создания различных продуктов.
+ * [+] Изолирует сложный код сборки продукта от его основной бизнес-логики.
+ *
+ * [-] Усложняет код программы из-за введения дополнительных классов.
+ * [-] Клиент будет привязан к конкретным классам строителей, так как в интерфейсе директора может не быть метода получения результата.
+ */
+
 class User {
   public name: string;
   public age: number;
@@ -33,10 +45,11 @@ class UserBuilder {
 }
 
 type UserParams = Parameters<typeof UserDirector['makeUserWithSpecifiedGender']> extends [infer Name, infer Age, ...infer _Rest] ? [Name, Age] : never;
+
 abstract class UserDirector {
   private static userBuilder: UserBuilder;
   private static makeUserWithSpecifiedGender(name: User['name'], age: User['age'], gender: User['gender']): void {
-    UserDirector.userBuilder.reset().addName(name).addAge(age).addGender(gender);
+    this.userBuilder.reset().addName(name).addAge(age).addGender(gender);
   }
 
   public static setUserBuilder(builder: UserBuilder): typeof UserDirector {
@@ -52,7 +65,7 @@ abstract class UserDirector {
   }
 
   public static makeUserWithNameOnly(name: User['name']): void {
-    UserDirector.userBuilder.reset().addName(name)
+    this.userBuilder.reset().addName(name)
   }
 }
 

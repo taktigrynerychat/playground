@@ -28,13 +28,16 @@
           "namedChunks": false,
           "extractLicenses": true,
           "vendorChunk": false
+        },
+        "development": {
+          "sourceMap": true
         }
       }
     },
     "serve": {
       "executor": "@nx/webpack:dev-server",
       "options": {
-        "buildTarget": "patterns:build"
+        "buildTarget": "patterns:build:development"
       },
       "configurations": {
         "production": {
