@@ -8,6 +8,7 @@
  *
  * [-] Не оправдан, если можно обойтись циклом
  */
+
 interface RangeIterator {
   (this: Range): Iterator<number>;
 }
