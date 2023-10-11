@@ -16,16 +16,17 @@ class AppElement extends HTMLElement {
       Object.entries(patternsByGroup).forEach(([patternName, {dynamicImport, executeByDefault, content}]) => {
         const el = document.createElement('button');
 
-        const callback = async () => {
+        async function callback (this, ev, clearConsole = true) {
           const { default: main } = await dynamicImport();
           const { value } = hljs.highlightAuto(content);
           code.innerHTML = value;
+          clearConsole && console.clear();
           main();
-        };
+        }
 
         el.innerHTML = patternName;
         el.onclick = callback;
-        executeByDefault && callback();
+        executeByDefault && callback(null, false);
         section.appendChild(el);
       });
       this.appendChild(section);
