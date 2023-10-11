@@ -20,17 +20,17 @@ class Range {
 }
 
 function iteratorFn(this: Range): Iterator<number> {
-  let self = this;
-  let current = self.from;
+  let { from: current, to: breakpoint} = this;
+
   return {
     next() {
-      if (current <= self.to) {
+      if (current <= breakpoint) {
         return {
           done: false,
           value: current++
         };
       } else {
-        self = null;
+        breakpoint = null;
         current = null;
         return {
           done: true,
@@ -42,17 +42,17 @@ function iteratorFn(this: Range): Iterator<number> {
 }
 
 function reverseIteratorFn(this: Range): Iterator<number> {
-  let self = this;
-  let current = self.to;
+  let { to: current, from: breakpoint} = this;
+
   return {
     next() {
-      if (current >= self.from) {
+      if (current >= breakpoint) {
         return {
           done: false,
           value: current--
         };
       } else {
-        self = null;
+        breakpoint = null;
         current = null;
         return {
           done: true,
@@ -64,15 +64,19 @@ function reverseIteratorFn(this: Range): Iterator<number> {
 }
 
 function customIterator(range: Range) {
-  let current = range.to;
+  let { to: current, from: breakpoint} = range;
+
   return {
     valid() {
-      const isValid= current >= range.from;
-      if (!isValid) current = null;
+      const isValid= current >= breakpoint;
+      if (!isValid) {
+        current = null;
+        breakpoint = null;
+      }
       return isValid;
     },
     next() {
-      if (current >= range.from) {
+      if (current >= breakpoint) {
         return current--
       } else {
         return undefined
